@@ -1,0 +1,158 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>Puzzle Miner</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+    var config = {
+     type: Phaser.AUTO,
+     width: 1000,
+     height: 600,
+     physics: {
+        default:"arcade",
+        arcade: {
+            gravity: {y:0},
+        debug: false
+    }
+},
+     scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
+
+var game = new Phaser.Game(config);
+var platforms;
+var player = scene.physics.add.existing(player, 0);
+var cursors;
+var stars = scene.physics.add.existing(stars, 0);
+var box = scene.physics.add.existing(box, 0);
+
+
+function preload ()
+ {
+    this.load.image("cave", "assets/Cave.png");
+    this.load.image("wallh", "assets/wall medium.png");
+    this.load.image("star", "assets/star.png");
+    this.load.image("bomb", "assets/bomb.png");
+    this.load.image("box", "assets/box.png");
+    this.load.spritesheet("dude", "assets/Miner.png", 
+    {frameWidth: 32, frameHeight: 48});
+
+ } 
+
+ function create ()
+ {
+    this.add.image(400, 300, "cave",).setScale(2);
+    platforms = this.physics.add.staticGroup();
+    
+    
+
+    platforms.create(400, 568, "wallh");
+    platforms.create(600, 400, "wallh");
+    platforms.create(50, 250, "wallh");
+    platforms.create(750, 220, "wallh");
+
+    player = this.physics.add.sprite(100, 450, "dude");
+    player.setCollideWorldBounds(true);
+
+    this.anims.create({
+        key: "left", frames: this.anims.generateFrameNumbers
+        ("dude", { start: 0, end: 1}),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "turn", frames: [{key: "dude", frame: 2}],
+        frameRate: 20
+    });
+    this.anims.create({
+        key: "right", frames: this.anims.generateFrameNumbers
+        ("dude", {start: 8, end: 9}),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "up", frames: this.anims.generateFrameNumbers
+        ("dude", {start: 6, end: 7}),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "down", frames: this.anims.generateFrameNumbers
+        ("dude", {start: 3, end: 4}),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    stars = this.physics.add.group ({
+        key: "star",
+        repeat: 3,
+        setXY: {x: 12, y: 0, stepX: 70}
+    });
+
+    box = this.physics.add.group ({
+        key: "box",
+        repeat: 1,
+        setXY: {x: 50, y: 400, stepX: 70}
+    });
+
+    this.physics.add.collider(player, platforms);
+    this.physics.add.collider(player, stars);
+    this.physics.add.collider(box, platforms);
+    this.physics.add.collider(player, box);
+    cursors = this.input.keyboard.createCursorKeys();
+    this.physics.add.collider(stars, platforms);
+ }
+
+ function update ()
+ { 
+    if (cursors.left.isDown)
+    {
+        player.setVelocityX(-160)
+        player.anims.play("left", true);
+    }
+    else if(cursors.right.isDown)
+    {
+        player.setVelocityX(160);
+
+        player.anims.play("right", true);
+    }
+    else
+    {
+        player.setVelocityX(0);
+
+        player.anims.play("turn");
+    }
+    if (cursors.up.isDown)
+    {
+        player.setVelocityY(-160);
+
+        player.anims.play("up", true);
+    }
+    else if(cursors.down.isDown)
+    {
+        player.setVelocityY(160);
+
+        player.anims.play("down", true);
+    }
+    else
+    {
+        player.setVelocityY(0);
+    }
+ }
+</script>
+
+</body>
+</html>
